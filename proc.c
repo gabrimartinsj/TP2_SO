@@ -346,6 +346,8 @@ scheduler(void)
       switchuvm(p);
       p->state = RUNNING;
       p->counter++;
+      p->timeslice = INTERV;
+
       swtch(&(c->scheduler), p->context);
       switchkvm();
 
@@ -353,8 +355,8 @@ scheduler(void)
       // It should have changed its p->state before coming back.
       c->proc = 0;
     }
-    release(&ptable.lock);
 
+    release(&ptable.lock);
   }
 }
 
@@ -389,9 +391,15 @@ sched(void)
 void
 yield(void)
 {
+  struct proc *p = myproc();
   acquire(&ptable.lock);  //DOC: yieldlock
-  myproc()->state = RUNNABLE;
-  sched();
+
+  p->timeslice--;
+  if(!p->timeslice) {
+    p->state = RUNNABLE;
+    sched();
+   }
+
   release(&ptable.lock);
 }
 
