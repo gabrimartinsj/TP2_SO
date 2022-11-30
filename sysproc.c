@@ -106,3 +106,16 @@ sys_cs(void)
   aux = myproc()->counter;
   return aux;
 }
+
+int
+sys_set_tickets(int )
+{
+  int n;
+
+  if (argint(0, &n) < 0)
+    return -1;
+
+  proc->tickets = n;
+ 
+  return n;
+}

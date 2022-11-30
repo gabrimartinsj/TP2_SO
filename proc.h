@@ -52,6 +52,7 @@ struct proc {
   int traceflag;
   int counter;
   int timeslice;
+  int tickets;
 };
 
 // Process memory is laid out contiguously, low addresses first:

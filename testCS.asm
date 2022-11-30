@@ -700,13 +700,16 @@ SYSCALL(trace)
  349:	c3                   	ret    
 
 0000034a <cs>:
+SYSCALL(cs)
  34a:	b8 17 00 00 00       	mov    $0x17,%eax
  34f:	cd 40                	int    $0x40
  351:	c3                   	ret    
- 352:	66 90                	xchg   %ax,%ax
- 354:	66 90                	xchg   %ax,%ax
- 356:	66 90                	xchg   %ax,%ax
- 358:	66 90                	xchg   %ax,%ax
+
+00000352 <set_tickets>:
+SYSCALL(set_tickets)
+ 352:	b8 18 00 00 00       	mov    $0x18,%eax
+ 357:	cd 40                	int    $0x40
+ 359:	c3                   	ret    
  35a:	66 90                	xchg   %ax,%ax
  35c:	66 90                	xchg   %ax,%ax
  35e:	66 90                	xchg   %ax,%ax

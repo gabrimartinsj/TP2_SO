@@ -6,6 +6,7 @@
 #include "x86.h"
 #include "proc.h"
 #include "spinlock.h"
+#include "rand.h"
 
 struct {
   struct spinlock lock;
@@ -86,6 +87,7 @@ allocproc(void)
   return 0;
 
 found:
+  p->tickets = 10;
   p->state = EMBRYO;
   p->pid = nextpid++;
 
@@ -327,16 +329,37 @@ scheduler(void)
 {
   struct proc *p;
   struct cpu *c = mycpu();
+  int foundproc = 1;
   c->proc = 0;
 
   for(;;){
     // Enable interrupts on this processor.
     sti();
 
+    int tickets_passed = 0;
+    int total_tickets = 0;
+
+    for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
+      if(p->state != RUNNABLE)
+        continue;
+     total_tickets = total_tickets + p->tickets;
+   }
+
+   long winner = random_at_most(total_tickets);
+
+
+   if (!foundproc)
+     hlt();
+   foundproc = 0;
+
     // Loop over process table looking for process to run.
     acquire(&ptable.lock);
     for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
       if(p->state != RUNNABLE)
+        continue;
+
+      tickets_passed += p->tickets;
+      if(tickets_passed < winner)
         continue;
 
       // Switch to chosen process.  It is the process's job
@@ -354,6 +377,8 @@ scheduler(void)
       // Process is done running for now.
       // It should have changed its p->state before coming back.
       c->proc = 0;
+
+      break;
     }
 
     release(&ptable.lock);

@@ -14,7 +14,7 @@
 00000000 ulib.c
 00000000 printf.c
 00000380 printint
-0000077c digits.1111
+0000077c digits.1113
 00000000 umalloc.c
 00000a20 freep
 00000a24 base
@@ -45,6 +45,7 @@
 00000000 main
 000000b0 strcmp
 0000033a dup
+00000372 set_tickets
 00000200 stat
 00000a20 _edata
 00000a2c _end

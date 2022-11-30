@@ -105,6 +105,7 @@ extern int sys_write(void);
 extern int sys_uptime(void);
 extern int sys_trace(void);
 extern int sys_cs(void);
+extern int sys_set_tickets(void);
 
 static int (*syscalls[])(void) = {
 [SYS_fork]    sys_fork,
@@ -130,6 +131,7 @@ static int (*syscalls[])(void) = {
 [SYS_close]   sys_close,
 [SYS_trace]   sys_trace,
 [SYS_cs]      sys_cs,
+[SYS_settickets]      sys_set_tickets,
 };
 
 char *syscallnames[] = {
@@ -156,6 +158,7 @@ char *syscallnames[] = {
 [SYS_close]   "close",
 [SYS_trace]   "trace",
 [SYS_cs]      "cs",
+[SYS_settickets]      "set_tickets",
 };
 
 void
