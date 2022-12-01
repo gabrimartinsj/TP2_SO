@@ -108,14 +108,14 @@ sys_cs(void)
 }
 
 int
-sys_set_tickets(int )
+sys_set_tickets(void)
 {
   int n;
 
   if (argint(0, &n) < 0)
     return -1;
 
-  proc->tickets = n;
- 
+  myproc()->tickets = n;
+
   return n;
 }

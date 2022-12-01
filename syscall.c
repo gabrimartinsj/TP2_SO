@@ -131,7 +131,7 @@ static int (*syscalls[])(void) = {
 [SYS_close]   sys_close,
 [SYS_trace]   sys_trace,
 [SYS_cs]      sys_cs,
-[SYS_settickets]      sys_set_tickets,
+[SYS_set_tickets]      sys_set_tickets,
 };
 
 char *syscallnames[] = {
@@ -158,7 +158,7 @@ char *syscallnames[] = {
 [SYS_close]   "close",
 [SYS_trace]   "trace",
 [SYS_cs]      "cs",
-[SYS_settickets]      "set_tickets",
+[SYS_set_tickets]      "set_tickets",
 };
 
 void

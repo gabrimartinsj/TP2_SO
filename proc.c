@@ -348,8 +348,7 @@ scheduler(void)
    long winner = random_at_most(total_tickets);
 
 
-   if (!foundproc)
-     hlt();
+   if (!foundproc) yield();
    foundproc = 0;
 
     // Loop over process table looking for process to run.
