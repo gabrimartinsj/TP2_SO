@@ -101,6 +101,7 @@ extern int sys_sbrk(void);
 extern int sys_sleep(void);
 extern int sys_unlink(void);
 extern int sys_wait(void);
+extern int sys_wait2(void);
 extern int sys_write(void);
 extern int sys_uptime(void);
 extern int sys_trace(void);
@@ -132,6 +133,7 @@ static int (*syscalls[])(void) = {
 [SYS_trace]   sys_trace,
 [SYS_cs]      sys_cs,
 [SYS_set_tickets]      sys_set_tickets,
+[SYS_wait2]      sys_wait2,
 };
 
 char *syscallnames[] = {

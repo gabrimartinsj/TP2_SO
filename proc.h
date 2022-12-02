@@ -53,6 +53,9 @@ struct proc {
   int counter;
   int timeslice;
   int tickets;
+  int retime;
+  int stime;
+  int rutime;
 };
 
 // Process memory is laid out contiguously, low addresses first:
@@ -60,3 +63,6 @@ struct proc {
 //   original data and bss
 //   fixed-size stack
 //   expandable heap
+
+int wait2(int *retime, int *rutime, int* stime);
+void contarprocessos();

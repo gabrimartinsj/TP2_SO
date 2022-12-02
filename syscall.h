@@ -23,3 +23,4 @@
 #define SYS_trace  22
 #define SYS_cs     23
 #define SYS_set_tickets     24
+#define SYS_wait2 25

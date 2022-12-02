@@ -324,6 +324,88 @@ wait(void)
 //  - swtch to start running that process
 //  - eventually that process transfers control
 //      via swtch back to the scheduler.
+
+int
+wait2(int *retime, int *rutime, int *stime) //recebe o ponteiro de 3 variaveis
+{
+  struct proc *p;
+  int havekids, pid;
+  struct proc *curproc = myproc();
+
+  acquire(&ptable.lock);
+  for(;;){
+    // Scan through table looking for exited children.
+    havekids = 0;
+    for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
+      if(p->parent != curproc)
+        continue;
+      havekids = 1;
+      if(p->state == ZOMBIE){
+        *retime = p->retime;
+        *rutime = p->rutime;
+        *stime = p->stime; // seta o valor dar 3 variaveis *retime = p->retime
+
+        // Found one.
+        pid = p->pid;
+        kfree(p->kstack);
+        p->kstack = 0;
+        freevm(p->pgdir);
+        p->pid = 0;
+        p->parent = 0;
+        p->name[0] = 0;
+        p->killed = 0;
+        p->state = UNUSED;
+
+        // seta pra 0 
+        p->retime = 0;
+        p->rutime = 0;
+        p->stime = 0;
+
+        release(&ptable.lock);
+        return pid;
+      }
+    }
+    // No point waiting if we don't have any children.
+    if(!havekids || curproc->killed){
+      release(&ptable.lock);
+      return -1;
+    }
+
+    // Wait for children to exit.  (See wakeup1 call in proc_exit.)
+    sleep(curproc, &ptable.lock);  //DOC: wait-sleep
+  }
+}
+
+
+void contarprocessos(){
+  struct proc *p;
+  acquire(&ptable.lock);
+  
+    for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
+      switch (p->state){
+        case RUNNABLE: 
+        p->retime++;
+        break;
+        case RUNNING:
+        p->rutime++;
+        break;
+        case SLEEPING:
+        p->stime++;
+        break;
+        default:
+        ;
+      }
+    }
+  release(&ptable.lock);
+
+}
+
+
+
+
+
+
+
 void
 scheduler(void)
 {
