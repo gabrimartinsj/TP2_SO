@@ -27,6 +27,8 @@ int trace(int);
 int cs(void);
 int set_tickets(int);
 int wait2(int*, int*, int*);
+int sys_yield(void);
+int yield(void);
 
 // ulib.c
 int stat(const char*, struct stat*);

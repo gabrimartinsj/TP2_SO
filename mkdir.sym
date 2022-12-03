@@ -14,12 +14,13 @@
 00000000 ulib.c
 00000000 printf.c
 000003b0 printint
-00000804 digits.1095
+00000804 digits.1099
 00000000 umalloc.c
 00000abc freep
 00000ac0 base
 00000080 strcpy
 00000460 printf
+000003a3 sys_yield
 000002b0 memmove
 0000032b mknod
 00000383 trace

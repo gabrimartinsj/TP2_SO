@@ -1,3 +1,6 @@
+
+
+
 // Per-CPU state
 struct cpu {
   uchar apicid;                // Local APIC ID
@@ -8,10 +11,16 @@ struct cpu {
   int ncli;                    // Depth of pushcli nesting.
   int intena;                  // Were interrupts enabled before pushcli?
   struct proc *proc;           // The process running on this cpu or null
+  struct cpu *cpu;
 };
 
 extern struct cpu cpus[NCPU];
 extern int ncpu;
+
+extern struct cpu *cpu asm("%gs:0");       // &cpus[cpunum()]
+extern struct proc *proc asm("%gs:4");     // cpus[cpunum()].proc
+
+
 
 //PAGEBREAK: 17
 // Saved registers for kernel context switches.

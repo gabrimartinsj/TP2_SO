@@ -12,11 +12,11 @@
 00000000 .debug_loc
 00000000 .debug_ranges
 00000000 usertests.c
-00005f20 args.1459
+00005f20 args.1463
 00000000 ulib.c
 00000000 printf.c
 00003a50 printint
-00005608 digits.1095
+00005608 digits.1099
 00000000 umalloc.c
 00005fa0 freep
 00005fa4 base
@@ -24,6 +24,7 @@
 00000d60 exitwait
 00003b00 printf
 00005f00 stdout
+00003a43 sys_yield
 00003330 bigargtest
 00003950 memmove
 00000310 openiputtest
