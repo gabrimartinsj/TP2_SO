@@ -42,7 +42,7 @@ sys_wait2(void)
   int *retime;
   int *rutime;
   int *stime;
-  
+
   if(argptr(0, (void*)&retime, sizeof(retime)) < 0 ||  argptr(1, (void*)&rutime, sizeof(rutime)) < 0 || argptr(2, (void*)&stime, sizeof(stime)) < 0)
     return -1;
 
@@ -131,4 +131,17 @@ sys_set_tickets(void)
   myproc()->tickets = n;
 
   return n;
+}
+
+int
+sys_set_priority(void)
+{
+  int pid, pr;
+
+  if(argint(0, &pid) < 0)
+    return -1;
+  if(argint(1, &pr) < 0)
+    return -1;
+
+  return set_priority(pid, pr);
 }

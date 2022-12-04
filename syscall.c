@@ -101,13 +101,16 @@ extern int sys_sbrk(void);
 extern int sys_sleep(void);
 extern int sys_unlink(void);
 extern int sys_wait(void);
-extern int sys_wait2(void);
 extern int sys_write(void);
 extern int sys_uptime(void);
 extern int sys_trace(void);
 extern int sys_cs(void);
 extern int sys_set_tickets(void);
+extern int sys_set_priority(void);
+extern int sys_wait2(void);
 extern int sys_yield(void);
+
+extern int proc_quantum;
 
 static int (*syscalls[])(void) = {
 [SYS_fork]    sys_fork,
@@ -133,8 +136,9 @@ static int (*syscalls[])(void) = {
 [SYS_close]   sys_close,
 [SYS_trace]   sys_trace,
 [SYS_cs]      sys_cs,
-[SYS_set_tickets]      sys_set_tickets,
-[SYS_wait2]      sys_wait2,
+[SYS_set_tickets]   sys_set_tickets,
+[SYS_set_priority]  sys_set_priority,
+[SYS_wait2]         sys_wait2,
 [SYS_sys_yield]         sys_yield,
 };
 
@@ -163,6 +167,9 @@ char *syscallnames[] = {
 [SYS_trace]   "trace",
 [SYS_cs]      "cs",
 [SYS_set_tickets]      "set_tickets",
+[SYS_set_priority]     "set_priority",
+[SYS_wait2]            "wait2",
+[SYS_sys_yield]        "sys_yield",
 };
 
 void

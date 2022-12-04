@@ -73,8 +73,8 @@ main(int argc, char *argv[])
 	for (i = 0; i < 3; i++)
 		for (j = 0; j < 3; j++)
 			record[i][j] /= n;
-	printf(1, "\n\nCPU BOUND - Average sleeping time: %d - Average ready time: %d - Average turnaround time: %d\n\n\n",  record[0][2], record[0][0], record[0][0] + record[0][1] + record[0][2]);
-	printf(1, "SCPU BOUND - Average sleeping time: %d - Average ready time: %d - Average turnaround time: %d\n\n\n", record[1][2], record[1][0],  record[1][0] + record[1][1] + record[1][2]);
-	printf(1, "I/O BOUND - Average sleeping time: %d - Average ready time: %d - Average turnaround time: %d\n\n\n", record[2][2], record[2][0],  record[2][0] + record[2][1] + record[2][2]);
+	printf(1, "\nCPU BOUND - Average sleeping time: %d - Average ready time: %d - Average turnaround time: %d\n\n",  record[0][2], record[0][0], record[0][0] + record[0][1] + record[0][2]);
+	printf(1, "SCPU BOUND - Average sleeping time: %d - Average ready time: %d - Average turnaround time: %d\n\n", record[1][2], record[1][0],  record[1][0] + record[1][1] + record[1][2]);
+	printf(1, "I/O BOUND - Average sleeping time: %d - Average ready time: %d - Average turnaround time: %d\n\n", record[2][2], record[2][0],  record[2][0] + record[2][1] + record[2][2]);
 	exit();
 }

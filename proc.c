@@ -66,6 +66,41 @@ myproc(void) {
   return p;
 }
 
+int proc_quantum = 0;
+
+int
+curr_time(void){
+  uint time;
+
+  acquire(&tickslock);
+  time = ticks;
+  release(&tickslock);
+
+  return time;
+}
+
+int
+set_max_time(void){
+  struct proc *p;
+  int priority_sum = 0;
+  int proc_quantum = 0;
+
+  for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
+    if(p->pid){
+      proc_quantum = proc_quantum + 1;
+      priority_sum = priority_sum + p->priority;
+    }
+  }
+
+  for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
+    if(p->pid){
+      p->max_time = (10000*p->priority)/priority_sum;
+    }
+  }
+
+  return proc_quantum;
+}
+
 //PAGEBREAK: 32
 // Look in the process table for an UNUSED proc.
 // If found, change state to EMBRYO and initialize
@@ -89,13 +124,16 @@ allocproc(void)
 found:
 
   #if LOTTERY
-  p->tickets = 10;
+    p->tickets = 10;
   #endif
 
   p->state = EMBRYO;
   p->pid = nextpid++;
 
-  
+  #if PRIORITY
+    p->priority = 1;
+    p->init_time = curr_time();
+  #endif
 
   release(&ptable.lock);
 
@@ -352,6 +390,7 @@ wait2(int *retime, int *rutime, int *stime) //recebe o ponteiro de 3 variaveis
     for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
       if(p->parent != curproc)
         continue;
+
       havekids = 1;
       if(p->state == ZOMBIE){
         *retime = p->retime;
@@ -361,15 +400,17 @@ wait2(int *retime, int *rutime, int *stime) //recebe o ponteiro de 3 variaveis
         // Found one.
         pid = p->pid;
         kfree(p->kstack);
+
         p->kstack = 0;
         freevm(p->pgdir);
+
         p->pid = 0;
         p->parent = 0;
         p->name[0] = 0;
         p->killed = 0;
         p->state = UNUSED;
 
-        // seta pra 0 
+        // seta pra 0
         p->ctime = 0;
         p->retime = 0;
         p->rutime = 0;
@@ -384,20 +425,18 @@ wait2(int *retime, int *rutime, int *stime) //recebe o ponteiro de 3 variaveis
       release(&ptable.lock);
       return -1;
     }
-
     // Wait for children to exit.  (See wakeup1 call in proc_exit.)
     sleep(curproc, &ptable.lock);  //DOC: wait-sleep
   }
 }
 
-
 void countprocs(){
   struct proc *p;
   acquire(&ptable.lock);
-  
+
     for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
       switch (p->state){
-        case RUNNABLE: 
+        case RUNNABLE:
         p->retime++;
         break;
         case RUNNING:
@@ -410,77 +449,146 @@ void countprocs(){
         ;
       }
     }
-  release(&ptable.lock);
 
+  release(&ptable.lock);
 }
 
+int
+set_priority(int pid, int priority)
+{
+  struct proc *p;
+  acquire(&ptable.lock);
+
+  for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
+    if(p->pid == pid){
+	  p->priority = priority;
+	  break;
+	}
+  }
+
+  release(&ptable.lock);
+
+  return pid;
+}
 
 void
 scheduler(void)
 {
-
   #if LOTTERY
-
-  struct proc *p;
-  struct cpu *c = mycpu();
-  int foundproc = 1;
-  c->proc = 0;
-
-  for(;;){
-    // Enable interrupts on this processor.
-    sti();
-
-    int tickets_passed = 0;
-    int total_tickets = 0;
-
-    for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
-      if(p->state != RUNNABLE)
-        continue;
-     total_tickets = total_tickets + p->tickets;
-   }
-
-   long winner = random_at_most(total_tickets);
-
-
-   if (!foundproc) cli();
-   foundproc = 0;
-
-    // Loop over process table looking for process to run.
-    acquire(&ptable.lock);
-    for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
-      if(p->state != RUNNABLE)
-        continue;
-
-      tickets_passed += p->tickets;
-      if(tickets_passed < winner)
-        continue;
-
-      // Switch to chosen process.  It is the process's job
-      // to release ptable.lock and then reacquire it
-      // before jumping back to us.
-      c->proc = p;
-      switchuvm(p);
-      p->state = RUNNING;
-      p->counter++;
-      p->timeslice = INTERV;
-
-      swtch(&(c->scheduler), p->context);
-      switchkvm();
-
-      // Process is done running for now.
-      // It should have changed its p->state before coming back.
+      struct proc *p;
+      struct cpu *c = mycpu();
+      int foundproc = 1;
       c->proc = 0;
 
-      break;
-    }
+      for(;;){
+        // Enable interrupts on this processor.
+        sti();
 
-    release(&ptable.lock);
-  }
+        int tickets_passed = 0;
+        int total_tickets = 0;
 
+        for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
+          if(p->state != RUNNABLE)
+            continue;
+         total_tickets = total_tickets + p->tickets;
+       }
+
+       long winner = random_at_most(total_tickets);
+
+
+       if (!foundproc) cli();
+       foundproc = 0;
+
+        // Loop over process table looking for process to run.
+        acquire(&ptable.lock);
+        for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
+          if(p->state != RUNNABLE)
+            continue;
+
+          tickets_passed += p->tickets;
+          if(tickets_passed < winner)
+            continue;
+
+          // Switch to chosen process.  It is the process's job
+          // to release ptable.lock and then reacquire it
+          // before jumping back to us.
+          c->proc = p;
+          switchuvm(p);
+          p->state = RUNNING;
+          p->counter++;
+          p->timeslice = INTERV;
+
+          swtch(&(c->scheduler), p->context);
+          switchkvm();
+
+          // Process is done running for now.
+          // It should have changed its p->state before coming back.
+          c->proc = 0;
+
+          break;
+        }
+
+        release(&ptable.lock);
+      }
   #endif
 
   #if PRIORITY
+      struct proc *p, *p1;
+      struct cpu *c = mycpu();
+      c->proc = 0;
 
+      for(;;){
+        // Enable interrupts on this processor.
+        sti();
+
+        struct proc *highP;
+
+        // Loop over process table looking for process to run.
+        acquire(&ptable.lock);
+        proc_quantum = set_max_time();
+
+        for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
+          int proc_time = (curr_time()*10) - (p->init_time*10);
+
+          if(p->state != RUNNABLE || proc_time >= p->max_time){
+            if(proc_time >= p->max_time){
+              p->total_time =  (curr_time()) - (p->init_time);
+              p->init_time = curr_time();
+            }
+
+          continue;
+          }
+
+          highP = p;
+
+          for(p1 = ptable.proc; p1 < &ptable.proc[NPROC]; p1++){
+            if(p1->state != RUNNABLE)
+              continue;
+
+            if(p1->priority > highP->priority)
+              highP = p1;
+          }
+
+          p = highP;
+
+          // Switch to chosen process.  It is the process's job
+          // to release ptable.lock and then reacquire it
+          // before jumping back to us.
+          c->proc = p;
+
+          switchuvm(p);
+          p->state = RUNNING;
+
+          swtch(&(c->scheduler), p->context);
+          switchkvm();
+
+          // Process is done running for now.
+          // It should have changed its p->state before coming back.
+          c->proc = 0;
+        }
+
+        release(&ptable.lock);
+      }
   #endif
 }
 
@@ -525,6 +633,14 @@ yield(void)
    }
 
   release(&ptable.lock);
+}
+
+int
+sys_yield(void)
+{
+  yield();
+
+  return 0;
 }
 
 // A fork child's very first scheduling by scheduler()
@@ -585,11 +701,6 @@ sleep(void *chan, struct spinlock *lk)
     release(&ptable.lock);
     acquire(lk);
   }
-}
-
-int sys_yield(void){
-  yield();
-  return 0;
 }
 
 //PAGEBREAK!
