@@ -114,6 +114,11 @@ found:
   memset(p->context, 0, sizeof *p->context);
   p->context->eip = (uint)forkret;
 
+  p->ctime = ticks;
+	p->stime = 0;
+	p->retime = 0;
+	p->rutime = 0;
+
   return p;
 }
 
@@ -132,6 +137,7 @@ userinit(void)
     panic("userinit: out of memory?");
   inituvm(p->pgdir, _binary_initcode_start, (int)_binary_initcode_size);
   p->sz = PGSIZE;
+  p->ctime = ticks;
   memset(p->tf, 0, sizeof(*p->tf));
   p->tf->cs = (SEG_UCODE << 3) | DPL_USER;
   p->tf->ds = (SEG_UDATA << 3) | DPL_USER;
@@ -299,6 +305,7 @@ wait(void)
         p->parent = 0;
         p->name[0] = 0;
         p->killed = 0;
+        p->ctime = 0;
         p->state = UNUSED;
         release(&ptable.lock);
         return pid;
@@ -343,7 +350,7 @@ wait2(int *retime, int *rutime, int *stime) //recebe o ponteiro de 3 variaveis
       if(p->state == ZOMBIE){
         *retime = p->retime;
         *rutime = p->rutime;
-        *stime = p->stime; // seta o valor dar 3 variaveis *retime = p->retime
+        *stime = p->stime; // seta o valor dar 3 variaveis
 
         // Found one.
         pid = p->pid;
@@ -357,6 +364,7 @@ wait2(int *retime, int *rutime, int *stime) //recebe o ponteiro de 3 variaveis
         p->state = UNUSED;
 
         // seta pra 0 
+        p->ctime = 0;
         p->retime = 0;
         p->rutime = 0;
         p->stime = 0;

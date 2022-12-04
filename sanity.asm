@@ -80,7 +80,7 @@ main(int argc, char *argv[])
 		for (j = 0; j < 3; j++)
 			record[i][j] /= n;
 	printf(1, "\n\nCPU BOUND - Average sleeping time: %d - Average ready time: %d - Average turnaround time: %d\n\n\n",  record[0][2], record[0][0], record[0][0] + record[0][1] + record[0][2]);
-	printf(1, "CPU-S BOUND - Average sleeping time: %d - Average ready time: %d - Average turnaround time: %d\n\n\n", record[1][2], record[1][0],  record[1][0] + record[1][1] + record[1][2]);
+	printf(1, "SCPU BOUND - Average sleeping time: %d - Average ready time: %d - Average turnaround time: %d\n\n\n", record[1][2], record[1][0],  record[1][0] + record[1][1] + record[1][2]);
 	printf(1, "I/O BOUND - Average sleeping time: %d - Average ready time: %d - Average turnaround time: %d\n\n\n", record[2][2], record[2][0],  record[2][0] + record[2][1] + record[2][2]);
 	exit();
   b0:	e8 6e 04 00 00       	call   523 <exit>
@@ -195,7 +195,7 @@ main(int argc, char *argv[])
  18d:	68 00 0b 00 00       	push   $0xb00
  192:	6a 01                	push   $0x1
  194:	e8 07 05 00 00       	call   6a0 <printf>
-	printf(1, "CPU-S BOUND - Average sleeping time: %d - Average ready time: %d - Average turnaround time: %d\n\n\n", record[1][2], record[1][0],  record[1][0] + record[1][1] + record[1][2]);
+	printf(1, "SCPU BOUND - Average sleeping time: %d - Average ready time: %d - Average turnaround time: %d\n\n\n", record[1][2], record[1][0],  record[1][0] + record[1][1] + record[1][2]);
  199:	8b 4d d0             	mov    -0x30(%ebp),%ecx
  19c:	8b 45 d4             	mov    -0x2c(%ebp),%eax
  19f:	83 c4 14             	add    $0x14,%esp
@@ -258,7 +258,7 @@ main(int argc, char *argv[])
  235:	83 eb 01             	sub    $0x1,%ebx
  238:	75 f6                	jne    230 <main+0x230>
  23a:	e9 71 fe ff ff       	jmp    b0 <main+0xb0>
-				printf(1, "CPU-S bound, pid: %d, ready: %d, running: %d, sleeping: %d, turnaround: %d\n", pid, retime, rutime, stime, retime + rutime + stime);
+				printf(1, "SCPU bound, pid: %d, ready: %d, running: %d, sleeping: %d, turnaround: %d\n", pid, retime, rutime, stime, retime + rutime + stime);
  23f:	8b 7d b8             	mov    -0x48(%ebp),%edi
  242:	8b 55 bc             	mov    -0x44(%ebp),%edx
  245:	50                   	push   %eax

@@ -57,7 +57,7 @@ main(int argc, char *argv[])
 				record[0][2] += stime;
 				break;
 			case 1: // CPU bound processes, short tasks
-				printf(1, "CPU-S bound, pid: %d, ready: %d, running: %d, sleeping: %d, turnaround: %d\n", pid, retime, rutime, stime, retime + rutime + stime);
+				printf(1, "SCPU bound, pid: %d, ready: %d, running: %d, sleeping: %d, turnaround: %d\n", pid, retime, rutime, stime, retime + rutime + stime);
 				record[1][0] += retime;
 				record[1][1] += rutime;
 				record[1][2] += stime;
@@ -74,7 +74,7 @@ main(int argc, char *argv[])
 		for (j = 0; j < 3; j++)
 			record[i][j] /= n;
 	printf(1, "\n\nCPU BOUND - Average sleeping time: %d - Average ready time: %d - Average turnaround time: %d\n\n\n",  record[0][2], record[0][0], record[0][0] + record[0][1] + record[0][2]);
-	printf(1, "CPU-S BOUND - Average sleeping time: %d - Average ready time: %d - Average turnaround time: %d\n\n\n", record[1][2], record[1][0],  record[1][0] + record[1][1] + record[1][2]);
+	printf(1, "SCPU BOUND - Average sleeping time: %d - Average ready time: %d - Average turnaround time: %d\n\n\n", record[1][2], record[1][0],  record[1][0] + record[1][1] + record[1][2]);
 	printf(1, "I/O BOUND - Average sleeping time: %d - Average ready time: %d - Average turnaround time: %d\n\n\n", record[2][2], record[2][0],  record[2][0] + record[2][1] + record[2][2]);
 	exit();
 }
