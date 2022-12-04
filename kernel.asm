@@ -7557,8 +7557,8 @@ myproc(void) {
 80103c72:	8d b4 26 00 00 00 00 	lea    0x0(%esi,%eiz,1),%esi
 80103c79:	8d b4 26 00 00 00 00 	lea    0x0(%esi,%eiz,1),%esi
 
-80103c80 <contarprocessos>:
-void contarprocessos(){
+80103c80 <countprocs>:
+void countprocs(){
 80103c80:	f3 0f 1e fb          	endbr32 
 80103c84:	55                   	push   %ebp
 80103c85:	89 e5                	mov    %esp,%ebp
@@ -7569,27 +7569,27 @@ void contarprocessos(){
 80103c94:	83 c4 10             	add    $0x10,%esp
     for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
 80103c97:	b8 d4 47 11 80       	mov    $0x801147d4,%eax
-80103c9c:	eb 13                	jmp    80103cb1 <contarprocessos+0x31>
+80103c9c:	eb 13                	jmp    80103cb1 <countprocs+0x31>
 80103c9e:	66 90                	xchg   %ax,%ax
       switch (p->state){
 80103ca0:	83 fa 02             	cmp    $0x2,%edx
-80103ca3:	74 53                	je     80103cf8 <contarprocessos+0x78>
+80103ca3:	74 53                	je     80103cf8 <countprocs+0x78>
     for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
 80103ca5:	05 9c 00 00 00       	add    $0x9c,%eax
 80103caa:	3d d4 6e 11 80       	cmp    $0x80116ed4,%eax
-80103caf:	74 20                	je     80103cd1 <contarprocessos+0x51>
+80103caf:	74 20                	je     80103cd1 <countprocs+0x51>
       switch (p->state){
 80103cb1:	8b 50 0c             	mov    0xc(%eax),%edx
 80103cb4:	83 fa 03             	cmp    $0x3,%edx
-80103cb7:	74 2f                	je     80103ce8 <contarprocessos+0x68>
+80103cb7:	74 2f                	je     80103ce8 <countprocs+0x68>
 80103cb9:	83 fa 04             	cmp    $0x4,%edx
-80103cbc:	75 e2                	jne    80103ca0 <contarprocessos+0x20>
+80103cbc:	75 e2                	jne    80103ca0 <countprocs+0x20>
         p->rutime++;
 80103cbe:	83 80 94 00 00 00 01 	addl   $0x1,0x94(%eax)
     for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
 80103cc5:	05 9c 00 00 00       	add    $0x9c,%eax
 80103cca:	3d d4 6e 11 80       	cmp    $0x80116ed4,%eax
-80103ccf:	75 e0                	jne    80103cb1 <contarprocessos+0x31>
+80103ccf:	75 e0                	jne    80103cb1 <countprocs+0x31>
   release(&ptable.lock);
 80103cd1:	83 ec 0c             	sub    $0xc,%esp
 80103cd4:	68 a0 47 11 80       	push   $0x801147a0
@@ -7603,12 +7603,12 @@ void contarprocessos(){
         p->retime++;
 80103ce8:	83 80 8c 00 00 00 01 	addl   $0x1,0x8c(%eax)
         break;
-80103cef:	eb b4                	jmp    80103ca5 <contarprocessos+0x25>
+80103cef:	eb b4                	jmp    80103ca5 <countprocs+0x25>
 80103cf1:	8d b4 26 00 00 00 00 	lea    0x0(%esi,%eiz,1),%esi
         p->stime++;
 80103cf8:	83 80 90 00 00 00 01 	addl   $0x1,0x90(%eax)
         break;
-80103cff:	eb a4                	jmp    80103ca5 <contarprocessos+0x25>
+80103cff:	eb a4                	jmp    80103ca5 <countprocs+0x25>
 80103d01:	8d b4 26 00 00 00 00 	lea    0x0(%esi,%eiz,1),%esi
 80103d08:	8d b4 26 00 00 00 00 	lea    0x0(%esi,%eiz,1),%esi
 80103d0f:	90                   	nop
@@ -12231,8 +12231,8 @@ rcr2(void)
 8010606c:	e8 cf e9 ff ff       	call   80104a40 <acquire>
       ticks++;
 80106071:	83 05 20 77 11 80 01 	addl   $0x1,0x80117720
-      contarprocessos(); //count procs
-80106078:	e8 03 dc ff ff       	call   80103c80 <contarprocessos>
+      countprocs(); 
+80106078:	e8 03 dc ff ff       	call   80103c80 <countprocs>
       wakeup(&ticks);
 8010607d:	c7 04 24 20 77 11 80 	movl   $0x80117720,(%esp)
 80106084:	e8 37 e3 ff ff       	call   801043c0 <wakeup>

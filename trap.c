@@ -51,7 +51,7 @@ trap(struct trapframe *tf)
     if(cpuid() == 0){
       acquire(&tickslock);
       ticks++;
-      contarprocessos(); //count procs
+      countprocs(); 
       wakeup(&ticks);
       release(&tickslock);
     }

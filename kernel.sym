@@ -273,7 +273,6 @@
 8010656d vector66
 80106420 vector29
 80101a60 readi
-80103c80 contarprocessos
 801067ef vector135
 80100860 consoleintr
 80104430 kill
@@ -415,6 +414,7 @@
 80104860 holdingsleep
 80114780 ncpu
 80106429 vector30
+80103c80 countprocs
 801039d0 userinit
 801000d0 bread
 80106792 vector127

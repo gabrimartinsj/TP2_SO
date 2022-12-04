@@ -75,4 +75,4 @@ struct proc {
 //   expandable heap
 
 int wait2(int *retime, int *rutime, int* stime);
-void contarprocessos();
+void countprocs();

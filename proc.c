@@ -385,7 +385,7 @@ wait2(int *retime, int *rutime, int *stime) //recebe o ponteiro de 3 variaveis
 }
 
 
-void contarprocessos(){
+void countprocs(){
   struct proc *p;
   acquire(&ptable.lock);
   
