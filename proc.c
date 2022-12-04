@@ -87,9 +87,15 @@ allocproc(void)
   return 0;
 
 found:
+
+  #if LOTTERY
   p->tickets = 10;
+  #endif
+
   p->state = EMBRYO;
   p->pid = nextpid++;
+
+  
 
   release(&ptable.lock);
 
@@ -409,14 +415,12 @@ void countprocs(){
 }
 
 
-
-
-
-
-
 void
 scheduler(void)
 {
+
+  #if LOTTERY
+
   struct proc *p;
   struct cpu *c = mycpu();
   int foundproc = 1;
@@ -472,6 +476,12 @@ scheduler(void)
 
     release(&ptable.lock);
   }
+
+  #endif
+
+  #if PRIORITY
+
+  #endif
 }
 
 // Enter scheduler.  Must hold only ptable.lock
