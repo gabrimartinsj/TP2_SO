@@ -27,7 +27,7 @@ main(int argc, char *argv[])
 	for (i = 0; i < n; i++){
 		j = i % 3;
 		pid = fork();
-		if (pid == 0) {//child
+		if (pid == 0) { //child
 			j = (getpid() - 4) % 3; // ensures independence from the first son's pid when gathering the results in the second part of the program
 			switch(j){
 				case 0: //CPU‐bound process (CPU):

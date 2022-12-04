@@ -25,4 +25,4 @@
 #define SYS_set_tickets     24
 #define SYS_set_priority    25
 #define SYS_wait2           26
-#define SYS_sys_yield          27
+#define SYS_sys_yield       27

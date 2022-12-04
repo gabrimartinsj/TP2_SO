@@ -103,6 +103,7 @@ sys_uptime(void)
   return xticks;
 }
 
+// Sys call para rastrear um processo
 int
 sys_trace(void)
 {
@@ -112,6 +113,7 @@ sys_trace(void)
   return 0;
 }
 
+// Sys call para avaliar troca de contextos
 int
 sys_cs(void)
 {
@@ -120,6 +122,7 @@ sys_cs(void)
   return aux;
 }
 
+// Sys call para definir a quantidade de tickets
 int
 sys_set_tickets(void)
 {
@@ -133,6 +136,7 @@ sys_set_tickets(void)
   return n;
 }
 
+// Sys call para definir a prioridade
 int
 sys_set_priority(void)
 {

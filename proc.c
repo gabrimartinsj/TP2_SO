@@ -68,6 +68,7 @@ myproc(void) {
 
 int proc_quantum = 0;
 
+// Identifica o tempo corrente de um processo
 int
 curr_time(void){
   uint time;
@@ -79,6 +80,7 @@ curr_time(void){
   return time;
 }
 
+// Define o quantum de processamento em relação ao tempo demandado pelo processo de maior prioridade em contrapeso à soma das prioridades
 int
 set_max_time(void){
   struct proc *p;
@@ -122,7 +124,7 @@ allocproc(void)
   return 0;
 
 found:
-
+  // Fluxo exclusivo para escalonador loteria: inicia processo com 10 tickets
   #if LOTTERY
     p->tickets = 10;
   #endif
@@ -130,6 +132,7 @@ found:
   p->state = EMBRYO;
   p->pid = nextpid++;
 
+  // Fluxo exclusivo para escalonador de RR com prioridade: inicia processo com prioridade 1
   #if PRIORITY
     p->priority = 1;
     p->init_time = curr_time();
@@ -430,6 +433,7 @@ wait2(int *retime, int *rutime, int *stime) //recebe o ponteiro de 3 variaveis
   }
 }
 
+// Contabiliza estatísticas dos processos
 void countprocs(){
   struct proc *p;
   acquire(&ptable.lock);
@@ -453,6 +457,7 @@ void countprocs(){
   release(&ptable.lock);
 }
 
+// Chamada a nível de usuário para definir a prioridade de um processo
 int
 set_priority(int pid, int priority)
 {
@@ -474,6 +479,7 @@ set_priority(int pid, int priority)
 void
 scheduler(void)
 {
+  // Fluxo do escalonador loteria
   #if LOTTERY
       struct proc *p;
       struct cpu *c = mycpu();
@@ -487,12 +493,14 @@ scheduler(void)
         int tickets_passed = 0;
         int total_tickets = 0;
 
+        // Avalia o total de tickets distribuídos]
         for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
           if(p->state != RUNNABLE)
             continue;
          total_tickets = total_tickets + p->tickets;
        }
 
+       // Sorteia o ticket vencedor
        long winner = random_at_most(total_tickets);
 
 
@@ -505,6 +513,7 @@ scheduler(void)
           if(p->state != RUNNABLE)
             continue;
 
+          // Avança até o processo com o ticket premiado
           tickets_passed += p->tickets;
           if(tickets_passed < winner)
             continue;
@@ -532,6 +541,7 @@ scheduler(void)
       }
   #endif
 
+  // Fluxo do escalonador RR com prioridade
   #if PRIORITY
       struct proc *p, *p1;
       struct cpu *c = mycpu();
@@ -547,6 +557,7 @@ scheduler(void)
         acquire(&ptable.lock);
         proc_quantum = set_max_time();
 
+        // Avalia o tempo de processamento corrente
         for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
           int proc_time = (curr_time()*10) - (p->init_time*10);
 
@@ -561,6 +572,7 @@ scheduler(void)
 
           highP = p;
 
+          // Avança até o processo de maior prioridade
           for(p1 = ptable.proc; p1 < &ptable.proc[NPROC]; p1++){
             if(p1->state != RUNNABLE)
               continue;
@@ -635,6 +647,7 @@ yield(void)
   release(&ptable.lock);
 }
 
+// Chamada a nível de usuário para chamada de yield
 int
 sys_yield(void)
 {

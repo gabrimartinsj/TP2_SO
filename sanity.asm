@@ -78,7 +78,7 @@ main(int argc, char *argv[])
 		j = i % 3;
 		pid = fork();
   89:	e8 5c 04 00 00       	call   4ea <fork>
-		if (pid == 0) {//child
+		if (pid == 0) { //child
   8e:	85 c0                	test   %eax,%eax
   90:	0f 84 c9 00 00 00    	je     15f <main+0x15f>
 
@@ -220,7 +220,7 @@ main(int argc, char *argv[])
 	for (i = 0; i < n; i++){
 		j = i % 3;
 		pid = fork();
-		if (pid == 0) {//child
+		if (pid == 0) { //child
 			j = (getpid() - 4) % 3; // ensures independence from the first son's pid when gathering the results in the second part of the program
  15f:	e8 0e 04 00 00       	call   572 <getpid>
 			switch(j){
@@ -244,7 +244,7 @@ main(int argc, char *argv[])
 	for (i = 0; i < n; i++){
 		j = i % 3;
 		pid = fork();
-		if (pid == 0) {//child
+		if (pid == 0) { //child
 			j = (getpid() - 4) % 3; // ensures independence from the first son's pid when gathering the results in the second part of the program
 			switch(j){
  182:	d9 ee                	fldz   
@@ -262,7 +262,7 @@ main(int argc, char *argv[])
 	for (i = 0; i < n; i++){
 		j = i % 3;
 		pid = fork();
-		if (pid == 0) {//child
+		if (pid == 0) { //child
 			j = (getpid() - 4) % 3; // ensures independence from the first son's pid when gathering the results in the second part of the program
 			switch(j){
  1a2:	bb 64 00 00 00       	mov    $0x64,%ebx
@@ -290,7 +290,7 @@ main(int argc, char *argv[])
 	for (i = 0; i < n; i++){
 		j = i % 3;
 		pid = fork();
-		if (pid == 0) {//child
+		if (pid == 0) { //child
 			j = (getpid() - 4) % 3; // ensures independence from the first son's pid when gathering the results in the second part of the program
 			switch(j){
  1c4:	bb 64 00 00 00       	mov    $0x64,%ebx

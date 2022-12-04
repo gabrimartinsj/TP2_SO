@@ -9835,7 +9835,7 @@ allocproc(void)
   return 0;
 
 found:
-
+  // Fluxo exclusivo para escalonador loteria: inicia processo com 10 tickets
   #if LOTTERY
     p->tickets = 10;
 801035e1:	c7 83 88 00 00 00 0a 	movl   $0xa,0x88(%ebx)
@@ -9847,7 +9847,7 @@ found:
 
   release(&ptable.lock);
 801035eb:	68 a0 47 11 80       	push   $0x801147a0
-
+  // Fluxo exclusivo para escalonador loteria: inicia processo com 10 tickets
   #if LOTTERY
     p->tickets = 10;
   #endif
@@ -10247,6 +10247,7 @@ myproc(void) {
 
 int proc_quantum = 0;
 
+// Identifica o tempo corrente de um processo
 int
 curr_time(void){
 801037e0:	55                   	push   %ebp
@@ -10274,6 +10275,7 @@ curr_time(void){
 
 80103810 <set_max_time>:
 
+// Define o quantum de processamento em relação ao tempo demandado pelo processo de maior prioridade em contrapeso à soma das prioridades
 int
 set_max_time(void){
 80103810:	55                   	push   %ebp
@@ -10283,10 +10285,10 @@ set_max_time(void){
 
   for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
 80103811:	b8 d4 47 11 80       	mov    $0x801147d4,%eax
-
   return time;
 }
 
+// Define o quantum de processamento em relação ao tempo demandado pelo processo de maior prioridade em contrapeso à soma das prioridades
 int
 set_max_time(void){
 80103816:	89 e5                	mov    %esp,%ebp
@@ -10295,10 +10297,10 @@ set_max_time(void){
   int priority_sum = 0;
   int proc_quantum = 0;
 80103819:	31 f6                	xor    %esi,%esi
-
   return time;
 }
 
+// Define o quantum de processamento em relação ao tempo demandado pelo processo de maior prioridade em contrapeso à soma das prioridades
 int
 set_max_time(void){
 8010381b:	53                   	push   %ebx
@@ -10813,11 +10815,11 @@ myproc(void) {
 80103b1a:	8d b6 00 00 00 00    	lea    0x0(%esi),%esi
 
 80103b20 <countprocs>:
-    // Wait for children to exit.  (See wakeup1 call in proc_exit.)
     sleep(curproc, &ptable.lock);  //DOC: wait-sleep
   }
 }
 
+// Contabiliza estatísticas dos processos
 void countprocs(){
 80103b20:	55                   	push   %ebp
 80103b21:	89 e5                	mov    %esp,%ebp
@@ -10844,7 +10846,7 @@ void countprocs(){
         case SLEEPING:
         p->stime++;
 80103b4a:	83 80 90 00 00 00 01 	addl   $0x1,0x90(%eax)
-
+// Contabiliza estatísticas dos processos
 void countprocs(){
   struct proc *p;
   acquire(&ptable.lock);
@@ -10860,7 +10862,7 @@ void countprocs(){
         case RUNNABLE:
         p->retime++;
 80103b65:	83 80 8c 00 00 00 01 	addl   $0x1,0x8c(%eax)
-
+// Contabiliza estatísticas dos processos
 void countprocs(){
   struct proc *p;
   acquire(&ptable.lock);
@@ -10895,9 +10897,9 @@ void countprocs(){
 80103b99:	8d b4 26 00 00 00 00 	lea    0x0(%esi,%eiz,1),%esi
 
 80103ba0 <set_priority>:
-  release(&ptable.lock);
 }
 
+// Chamada a nível de usuário para definir a prioridade de um processo
 int
 set_priority(int pid, int priority)
 {
@@ -10951,6 +10953,7 @@ scheduler(void)
 80103bf3:	57                   	push   %edi
 80103bf4:	56                   	push   %esi
 80103bf5:	53                   	push   %ebx
+  // Fluxo do escalonador loteria
   #if LOTTERY
       struct proc *p;
       struct cpu *c = mycpu();
@@ -10963,6 +10966,7 @@ void
 scheduler(void)
 {
 80103bfb:	83 ec 1c             	sub    $0x1c,%esp
+  // Fluxo do escalonador loteria
   #if LOTTERY
       struct proc *p;
       struct cpu *c = mycpu();
@@ -10971,9 +10975,9 @@ scheduler(void)
       c->proc = 0;
 80103c03:	c7 80 ac 00 00 00 00 	movl   $0x0,0xac(%eax)
 80103c0a:	00 00 00 
-void
 scheduler(void)
 {
+  // Fluxo do escalonador loteria
   #if LOTTERY
       struct proc *p;
       struct cpu *c = mycpu();
@@ -10996,6 +11000,7 @@ sti(void)
         int total_tickets = 0;
 80103c19:	31 d2                	xor    %edx,%edx
 
+        // Avalia o total de tickets distribuídos]
         for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
 80103c1b:	b8 d4 47 11 80       	mov    $0x801147d4,%eax
 80103c20:	eb 12                	jmp    80103c34 <scheduler+0x44>
@@ -11009,20 +11014,20 @@ sti(void)
             continue;
          total_tickets = total_tickets + p->tickets;
 80103c3a:	03 90 88 00 00 00    	add    0x88(%eax),%edx
-        sti();
 
         int tickets_passed = 0;
         int total_tickets = 0;
 
+        // Avalia o total de tickets distribuídos]
         for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
 80103c40:	05 ac 00 00 00       	add    $0xac,%eax
 80103c45:	3d d4 72 11 80       	cmp    $0x801172d4,%eax
 80103c4a:	75 e8                	jne    80103c34 <scheduler+0x44>
-          if(p->state != RUNNABLE)
             continue;
          total_tickets = total_tickets + p->tickets;
        }
 
+       // Sorteia o ticket vencedor
        long winner = random_at_most(total_tickets);
 80103c4c:	83 ec 0c             	sub    $0xc,%esp
 80103c4f:	52                   	push   %edx
@@ -11032,11 +11037,11 @@ sti(void)
        if (!foundproc) cli();
 80103c55:	83 c4 10             	add    $0x10,%esp
 80103c58:	85 ff                	test   %edi,%edi
-          if(p->state != RUNNABLE)
             continue;
          total_tickets = total_tickets + p->tickets;
        }
 
+       // Sorteia o ticket vencedor
        long winner = random_at_most(total_tickets);
 80103c5a:	89 c6                	mov    %eax,%esi
 
@@ -11090,6 +11095,7 @@ cli(void)
 80103c92:	75 ec                	jne    80103c80 <scheduler+0x90>
             continue;
 
+          // Avança até o processo com o ticket premiado
           tickets_passed += p->tickets;
 80103c94:	03 97 88 00 00 00    	add    0x88(%edi),%edx
           if(tickets_passed < winner)
@@ -11148,7 +11154,7 @@ cli(void)
 
         release(&ptable.lock);
 80103ce4:	83 ec 0c             	sub    $0xc,%esp
-
+       // Sorteia o ticket vencedor
        long winner = random_at_most(total_tickets);
 
 
@@ -11560,6 +11566,7 @@ yield(void)
 
 80103f50 <sys_yield>:
 
+// Chamada a nível de usuário para chamada de yield
 int
 sys_yield(void)
 {
@@ -17051,6 +17058,7 @@ sys_uptime(void)
 
 80105c30 <sys_trace>:
 
+// Sys call para rastrear um processo
 int
 sys_trace(void)
 {
@@ -17075,6 +17083,7 @@ sys_trace(void)
 
 80105c50 <sys_cs>:
 
+// Sys call para avaliar troca de contextos
 int
 sys_cs(void)
 {
@@ -17094,6 +17103,7 @@ sys_cs(void)
 
 80105c70 <sys_set_tickets>:
 
+// Sys call para definir a quantidade de tickets
 int
 sys_set_tickets(void)
 {
@@ -17135,9 +17145,9 @@ sys_set_tickets(void)
 80105ca9:	8d bc 27 00 00 00 00 	lea    0x0(%edi,%eiz,1),%edi
 
 80105cb0 <sys_set_priority>:
-  return n;
 }
 
+// Sys call para definir a prioridade
 int
 sys_set_priority(void)
 {
