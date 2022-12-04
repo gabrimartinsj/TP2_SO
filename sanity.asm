@@ -29,17 +29,17 @@ main(int argc, char *argv[])
 	if (argc != 2){
   1e:	0f 85 19 01 00 00    	jne    13d <main+0x13d>
 	int stime;
-	int sums[3][3];
+	int record[3][3];
 	for (i = 0; i < 3; i++)
 		for (j = 0; j < 3; j++)
-			sums[i][j] = 0;
+			record[i][j] = 0;
 	n = atoi(argv[1]);
   24:	83 ec 0c             	sub    $0xc,%esp
   27:	ff 70 04             	pushl  0x4(%eax)
 	int pid;
 	for (i = 0; i < n; i++) {
   2a:	31 db                	xor    %ebx,%ebx
-			sums[i][j] = 0;
+			record[i][j] = 0;
   2c:	c7 45 c4 00 00 00 00 	movl   $0x0,-0x3c(%ebp)
   33:	c7 45 c8 00 00 00 00 	movl   $0x0,-0x38(%ebp)
   3a:	c7 45 cc 00 00 00 00 	movl   $0x0,-0x34(%ebp)
@@ -76,12 +76,12 @@ main(int argc, char *argv[])
   9f:	83 fa 02             	cmp    $0x2,%edx
   a2:	0f 84 5d 01 00 00    	je     205 <main+0x205>
   a8:	85 d2                	test   %edx,%edx
-  aa:	0f 84 34 01 00 00    	je     1e4 <main+0x1e4>
+  aa:	0f 84 2f 01 00 00    	je     1df <main+0x1df>
 		for (j = 0; j < 3; j++)
-			sums[i][j] /= n;
-	printf(1, "\n\nCPU bound:\nAverage ready time: %d\nAverage running time: %d\nAverage sleeping time: %d\nAverage turnaround time: %d\n\n\n", sums[0][0], sums[0][1], sums[0][2], sums[0][0] + sums[0][1] + sums[0][2]);
-	printf(1, "CPU-S bound:\nAverage ready time: %d\nAverage running time: %d\nAverage sleeping time: %d\nAverage turnaround time: %d\n\n\n", sums[1][0], sums[1][1], sums[1][2], sums[1][0] + sums[1][1] + sums[1][2]);
-	printf(1, "I/O bound:\nAverage ready time: %d\nAverage running time: %d\nAverage sleeping time: %d\nAverage turnaround time: %d\n\n\n", sums[2][0], sums[2][1], sums[2][2], sums[2][0] + sums[2][1] + sums[2][2]);
+			record[i][j] /= n;
+	printf(1, "\n\nCPU BOUND - Average sleeping time: %d - Average ready time: %d - Average turnaround time: %d\n\n\n",  record[0][2], record[0][0], record[0][0] + record[0][1] + record[0][2]);
+	printf(1, "CPU-S BOUND - Average sleeping time: %d - Average ready time: %d - Average turnaround time: %d\n\n\n", record[1][2], record[1][0],  record[1][0] + record[1][1] + record[1][2]);
+	printf(1, "I/O BOUND - Average sleeping time: %d - Average ready time: %d - Average turnaround time: %d\n\n\n", record[2][2], record[2][0],  record[2][0] + record[2][1] + record[2][2]);
 	exit();
   b0:	e8 6e 04 00 00       	call   523 <exit>
 	for (i = 0; i < n; i++) {
@@ -140,16 +140,16 @@ main(int argc, char *argv[])
  11a:	68 b4 0a 00 00       	push   $0xab4
  11f:	6a 01                	push   $0x1
  121:	e8 7a 05 00 00       	call   6a0 <printf>
-				sums[2][0] += retime;
+				record[2][0] += retime;
  126:	8b 45 b8             	mov    -0x48(%ebp),%eax
 				break;
  129:	83 c4 20             	add    $0x20,%esp
-				sums[2][0] += retime;
+				record[2][0] += retime;
  12c:	01 45 dc             	add    %eax,-0x24(%ebp)
-				sums[2][1] += rutime;
+				record[2][1] += rutime;
  12f:	8b 45 bc             	mov    -0x44(%ebp),%eax
  132:	01 45 e0             	add    %eax,-0x20(%ebp)
-				sums[2][2] += stime;
+				record[2][2] += stime;
  135:	8b 45 c0             	mov    -0x40(%ebp),%eax
  138:	01 45 e4             	add    %eax,-0x1c(%ebp)
 				break;
@@ -165,7 +165,7 @@ main(int argc, char *argv[])
  150:	8b 7d b4             	mov    -0x4c(%ebp),%edi
  153:	8d 4d c4             	lea    -0x3c(%ebp),%ecx
  156:	8d 5d e8             	lea    -0x18(%ebp),%ebx
-			sums[i][j] /= n;
+			record[i][j] /= n;
  159:	8b 01                	mov    (%ecx),%eax
  15b:	83 c1 0c             	add    $0xc,%ecx
  15e:	99                   	cltd   
@@ -182,59 +182,56 @@ main(int argc, char *argv[])
 	for (i = 0; i < 3; i++)
  176:	39 d9                	cmp    %ebx,%ecx
  178:	75 df                	jne    159 <main+0x159>
-	printf(1, "\n\nCPU bound:\nAverage ready time: %d\nAverage running time: %d\nAverage sleeping time: %d\nAverage turnaround time: %d\n\n\n", sums[0][0], sums[0][1], sums[0][2], sums[0][0] + sums[0][1] + sums[0][2]);
- 17a:	8b 55 c4             	mov    -0x3c(%ebp),%edx
- 17d:	8b 4d c8             	mov    -0x38(%ebp),%ecx
- 180:	50                   	push   %eax
- 181:	8b 5d cc             	mov    -0x34(%ebp),%ebx
- 184:	50                   	push   %eax
- 185:	8d 04 0a             	lea    (%edx,%ecx,1),%eax
- 188:	01 d8                	add    %ebx,%eax
+	printf(1, "\n\nCPU BOUND - Average sleeping time: %d - Average ready time: %d - Average turnaround time: %d\n\n\n",  record[0][2], record[0][0], record[0][0] + record[0][1] + record[0][2]);
+ 17a:	8b 4d c4             	mov    -0x3c(%ebp),%ecx
+ 17d:	8b 45 c8             	mov    -0x38(%ebp),%eax
+ 180:	83 ec 0c             	sub    $0xc,%esp
+ 183:	8b 55 cc             	mov    -0x34(%ebp),%edx
+ 186:	01 c8                	add    %ecx,%eax
+ 188:	01 d0                	add    %edx,%eax
  18a:	50                   	push   %eax
- 18b:	53                   	push   %ebx
- 18c:	51                   	push   %ecx
- 18d:	52                   	push   %edx
- 18e:	68 00 0b 00 00       	push   $0xb00
- 193:	6a 01                	push   $0x1
- 195:	e8 06 05 00 00       	call   6a0 <printf>
-	printf(1, "CPU-S bound:\nAverage ready time: %d\nAverage running time: %d\nAverage sleeping time: %d\nAverage turnaround time: %d\n\n\n", sums[1][0], sums[1][1], sums[1][2], sums[1][0] + sums[1][1] + sums[1][2]);
- 19a:	8b 55 d0             	mov    -0x30(%ebp),%edx
- 19d:	8b 4d d4             	mov    -0x2c(%ebp),%ecx
- 1a0:	83 c4 18             	add    $0x18,%esp
- 1a3:	8b 5d d8             	mov    -0x28(%ebp),%ebx
- 1a6:	8d 04 0a             	lea    (%edx,%ecx,1),%eax
- 1a9:	01 d8                	add    %ebx,%eax
- 1ab:	50                   	push   %eax
- 1ac:	53                   	push   %ebx
- 1ad:	51                   	push   %ecx
- 1ae:	52                   	push   %edx
- 1af:	68 78 0b 00 00       	push   $0xb78
- 1b4:	6a 01                	push   $0x1
- 1b6:	e8 e5 04 00 00       	call   6a0 <printf>
-	printf(1, "I/O bound:\nAverage ready time: %d\nAverage running time: %d\nAverage sleeping time: %d\nAverage turnaround time: %d\n\n\n", sums[2][0], sums[2][1], sums[2][2], sums[2][0] + sums[2][1] + sums[2][2]);
- 1bb:	8b 55 dc             	mov    -0x24(%ebp),%edx
- 1be:	8b 4d e0             	mov    -0x20(%ebp),%ecx
- 1c1:	83 c4 18             	add    $0x18,%esp
- 1c4:	8b 5d e4             	mov    -0x1c(%ebp),%ebx
- 1c7:	8d 04 0a             	lea    (%edx,%ecx,1),%eax
- 1ca:	01 d8                	add    %ebx,%eax
- 1cc:	50                   	push   %eax
- 1cd:	53                   	push   %ebx
- 1ce:	51                   	push   %ecx
- 1cf:	52                   	push   %edx
- 1d0:	68 f0 0b 00 00       	push   $0xbf0
- 1d5:	6a 01                	push   $0x1
- 1d7:	e8 c4 04 00 00       	call   6a0 <printf>
+ 18b:	51                   	push   %ecx
+ 18c:	52                   	push   %edx
+ 18d:	68 00 0b 00 00       	push   $0xb00
+ 192:	6a 01                	push   $0x1
+ 194:	e8 07 05 00 00       	call   6a0 <printf>
+	printf(1, "CPU-S BOUND - Average sleeping time: %d - Average ready time: %d - Average turnaround time: %d\n\n\n", record[1][2], record[1][0],  record[1][0] + record[1][1] + record[1][2]);
+ 199:	8b 4d d0             	mov    -0x30(%ebp),%ecx
+ 19c:	8b 45 d4             	mov    -0x2c(%ebp),%eax
+ 19f:	83 c4 14             	add    $0x14,%esp
+ 1a2:	8b 55 d8             	mov    -0x28(%ebp),%edx
+ 1a5:	01 c8                	add    %ecx,%eax
+ 1a7:	01 d0                	add    %edx,%eax
+ 1a9:	50                   	push   %eax
+ 1aa:	51                   	push   %ecx
+ 1ab:	52                   	push   %edx
+ 1ac:	68 64 0b 00 00       	push   $0xb64
+ 1b1:	6a 01                	push   $0x1
+ 1b3:	e8 e8 04 00 00       	call   6a0 <printf>
+	printf(1, "I/O BOUND - Average sleeping time: %d - Average ready time: %d - Average turnaround time: %d\n\n\n", record[2][2], record[2][0],  record[2][0] + record[2][1] + record[2][2]);
+ 1b8:	8b 4d dc             	mov    -0x24(%ebp),%ecx
+ 1bb:	8b 45 e0             	mov    -0x20(%ebp),%eax
+ 1be:	83 c4 14             	add    $0x14,%esp
+ 1c1:	8b 55 e4             	mov    -0x1c(%ebp),%edx
+ 1c4:	01 c8                	add    %ecx,%eax
+ 1c6:	01 d0                	add    %edx,%eax
+ 1c8:	50                   	push   %eax
+ 1c9:	51                   	push   %ecx
+ 1ca:	52                   	push   %edx
+ 1cb:	68 c8 0b 00 00       	push   $0xbc8
+ 1d0:	6a 01                	push   $0x1
+ 1d2:	e8 c9 04 00 00       	call   6a0 <printf>
 	exit();
- 1dc:	83 c4 20             	add    $0x20,%esp
- 1df:	e9 cc fe ff ff       	jmp    b0 <main+0xb0>
+ 1d7:	83 c4 20             	add    $0x20,%esp
+ 1da:	e9 d1 fe ff ff       	jmp    b0 <main+0xb0>
 			switch(j) {
- 1e4:	d9 ee                	fldz   
-						for (double z = 0; z < 10000.0; z+= 0.1){
- 1e6:	dd 05 68 0c 00 00    	fldl   0xc68
- 1ec:	8d 74 26 00          	lea    0x0(%esi,%eiz,1),%esi
+ 1df:	d9 ee                	fldz   
+						for (double z = 0; z < 10000000.0; z+= 0.1){
+ 1e1:	dd 05 28 0c 00 00    	fldl   0xc28
+ 1e7:	8d b4 26 00 00 00 00 	lea    0x0(%esi,%eiz,1),%esi
+ 1ee:	66 90                	xchg   %ax,%ax
  1f0:	dc c1                	fadd   %st,%st(1)
- 1f2:	d9 05 70 0c 00 00    	flds   0xc70
+ 1f2:	d9 05 30 0c 00 00    	flds   0xc30
  1f8:	df f2                	fcomip %st(2),%st
  1fa:	77 f4                	ja     1f0 <main+0x1f0>
  1fc:	dd d8                	fstp   %st(0)
@@ -276,16 +273,16 @@ main(int argc, char *argv[])
  253:	68 68 0a 00 00       	push   $0xa68
  258:	6a 01                	push   $0x1
  25a:	e8 41 04 00 00       	call   6a0 <printf>
-				sums[1][0] += retime;
+				record[1][0] += retime;
  25f:	8b 45 b8             	mov    -0x48(%ebp),%eax
 				break;
  262:	83 c4 20             	add    $0x20,%esp
-				sums[1][0] += retime;
+				record[1][0] += retime;
  265:	01 45 d0             	add    %eax,-0x30(%ebp)
-				sums[1][1] += rutime;
+				record[1][1] += rutime;
  268:	8b 45 bc             	mov    -0x44(%ebp),%eax
  26b:	01 45 d4             	add    %eax,-0x2c(%ebp)
-				sums[1][2] += stime;
+				record[1][2] += stime;
  26e:	8b 45 c0             	mov    -0x40(%ebp),%eax
  271:	01 45 d8             	add    %eax,-0x28(%ebp)
 				break;
@@ -304,19 +301,19 @@ main(int argc, char *argv[])
  28d:	68 1c 0a 00 00       	push   $0xa1c
  292:	6a 01                	push   $0x1
  294:	e8 07 04 00 00       	call   6a0 <printf>
-				sums[0][0] += retime;
+				record[0][0] += retime;
  299:	03 75 b8             	add    -0x48(%ebp),%esi
-				sums[0][1] += rutime;
+				record[0][1] += rutime;
  29c:	8b 45 bc             	mov    -0x44(%ebp),%eax
 				break;
  29f:	83 c4 20             	add    $0x20,%esp
-				sums[0][1] += rutime;
+				record[0][1] += rutime;
  2a2:	01 45 c8             	add    %eax,-0x38(%ebp)
-				sums[0][2] += stime;
+				record[0][2] += stime;
  2a5:	8b 45 c0             	mov    -0x40(%ebp),%eax
-				sums[0][0] += retime;
+				record[0][0] += retime;
  2a8:	89 75 c4             	mov    %esi,-0x3c(%ebp)
-				sums[0][2] += stime;
+				record[0][2] += stime;
  2ab:	01 45 cc             	add    %eax,-0x34(%ebp)
 				break;
  2ae:	e9 18 fe ff ff       	jmp    cb <main+0xcb>
@@ -933,7 +930,7 @@ printint(int fd, int xx, int base, int sgn)
  622:	31 d2                	xor    %edx,%edx
  624:	89 cf                	mov    %ecx,%edi
  626:	f7 75 c4             	divl   -0x3c(%ebp)
- 629:	0f b6 92 7c 0c 00 00 	movzbl 0xc7c(%edx),%edx
+ 629:	0f b6 92 3c 0c 00 00 	movzbl 0xc3c(%edx),%edx
  630:	89 45 c0             	mov    %eax,-0x40(%ebp)
  633:	89 d8                	mov    %ebx,%eax
  635:	8d 5b 01             	lea    0x1(%ebx),%ebx
@@ -1204,7 +1201,7 @@ printf(int fd, const char *fmt, ...)
  821:	8b 5d 08             	mov    0x8(%ebp),%ebx
  824:	eb 1a                	jmp    840 <printf+0x1a0>
           s = "(null)";
- 826:	bb 74 0c 00 00       	mov    $0xc74,%ebx
+ 826:	bb 34 0c 00 00       	mov    $0xc34,%ebx
         while(*s != 0){
  82b:	89 75 d4             	mov    %esi,-0x2c(%ebp)
  82e:	b8 28 00 00 00       	mov    $0x28,%eax
@@ -1250,7 +1247,7 @@ free(void *ap)
 
   bp = (Header*)ap - 1;
   for(p = freep; !(bp > p && bp < p->s.ptr); p = p->s.ptr)
- 875:	a1 30 0f 00 00       	mov    0xf30,%eax
+ 875:	a1 f0 0e 00 00       	mov    0xef0,%eax
 {
  87a:	89 e5                	mov    %esp,%ebp
  87c:	57                   	push   %edi
@@ -1306,7 +1303,7 @@ free(void *ap)
 }
  8c1:	5b                   	pop    %ebx
   freep = p;
- 8c2:	a3 30 0f 00 00       	mov    %eax,0xf30
+ 8c2:	a3 f0 0e 00 00       	mov    %eax,0xef0
 }
  8c7:	5e                   	pop    %esi
  8c8:	5f                   	pop    %edi
@@ -1329,7 +1326,7 @@ free(void *ap)
     p->s.size += bp->s.size;
  8e7:	03 53 fc             	add    -0x4(%ebx),%edx
   freep = p;
- 8ea:	a3 30 0f 00 00       	mov    %eax,0xf30
+ 8ea:	a3 f0 0e 00 00       	mov    %eax,0xef0
     p->s.size += bp->s.size;
  8ef:	89 50 04             	mov    %edx,0x4(%eax)
     p->s.ptr = bp->s.ptr;
@@ -1363,7 +1360,7 @@ malloc(uint nbytes)
   nunits = (nbytes + sizeof(Header) - 1)/sizeof(Header) + 1;
  90d:	8b 45 08             	mov    0x8(%ebp),%eax
   if((prevp = freep) == 0){
- 910:	8b 3d 30 0f 00 00    	mov    0xf30,%edi
+ 910:	8b 3d f0 0e 00 00    	mov    0xef0,%edi
   nunits = (nbytes + sizeof(Header) - 1)/sizeof(Header) + 1;
  916:	8d 70 07             	lea    0x7(%eax),%esi
  919:	c1 ee 03             	shr    $0x3,%esi
@@ -1394,7 +1391,7 @@ malloc(uint nbytes)
  952:	8b 4a 04             	mov    0x4(%edx),%ecx
  955:	39 f1                	cmp    %esi,%ecx
  957:	73 4f                	jae    9a8 <malloc+0xa8>
- 959:	8b 3d 30 0f 00 00    	mov    0xf30,%edi
+ 959:	8b 3d f0 0e 00 00    	mov    0xef0,%edi
  95f:	89 d0                	mov    %edx,%eax
         p->s.size = nunits;
       }
@@ -1420,7 +1417,7 @@ malloc(uint nbytes)
  981:	50                   	push   %eax
  982:	e8 e9 fe ff ff       	call   870 <free>
   return freep;
- 987:	a1 30 0f 00 00       	mov    0xf30,%eax
+ 987:	a1 f0 0e 00 00       	mov    0xef0,%eax
       if((p = morecore(nunits)) == 0)
  98c:	83 c4 10             	add    $0x10,%esp
  98f:	85 c0                	test   %eax,%eax
@@ -1452,7 +1449,7 @@ malloc(uint nbytes)
         p->s.size = nunits;
  9b4:	89 72 04             	mov    %esi,0x4(%edx)
       freep = prevp;
- 9b7:	a3 30 0f 00 00       	mov    %eax,0xf30
+ 9b7:	a3 f0 0e 00 00       	mov    %eax,0xef0
 }
  9bc:	8d 65 f4             	lea    -0xc(%ebp),%esp
       return (void*)(p + 1);
@@ -1466,17 +1463,17 @@ malloc(uint nbytes)
  9c7:	8d b4 26 00 00 00 00 	lea    0x0(%esi,%eiz,1),%esi
  9ce:	66 90                	xchg   %ax,%ax
     base.s.ptr = freep = prevp = &base;
- 9d0:	c7 05 30 0f 00 00 34 	movl   $0xf34,0xf30
- 9d7:	0f 00 00 
+ 9d0:	c7 05 f0 0e 00 00 f4 	movl   $0xef4,0xef0
+ 9d7:	0e 00 00 
     base.s.size = 0;
- 9da:	bf 34 0f 00 00       	mov    $0xf34,%edi
+ 9da:	bf f4 0e 00 00       	mov    $0xef4,%edi
     base.s.ptr = freep = prevp = &base;
- 9df:	c7 05 34 0f 00 00 34 	movl   $0xf34,0xf34
- 9e6:	0f 00 00 
+ 9df:	c7 05 f4 0e 00 00 f4 	movl   $0xef4,0xef4
+ 9e6:	0e 00 00 
   for(p = prevp->s.ptr; ; prevp = p, p = p->s.ptr){
  9e9:	89 f8                	mov    %edi,%eax
     base.s.size = 0;
- 9eb:	c7 05 38 0f 00 00 00 	movl   $0x0,0xf38
+ 9eb:	c7 05 f8 0e 00 00 00 	movl   $0x0,0xef8
  9f2:	00 00 00 
     if(p->s.size >= nunits){
  9f5:	e9 36 ff ff ff       	jmp    930 <malloc+0x30>
