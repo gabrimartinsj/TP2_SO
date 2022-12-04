@@ -40,17 +40,17 @@ main(int argc, char *argv[])
   25:	e8 46 06 00 00       	call   670 <printf>
 				exit();
   2a:	e8 c3 04 00 00       	call   4f2 <exit>
-	int stime;
-	int record[3][3];
+
 	for (i = 0; i < 3; i++)
 		for (j = 0; j < 3; j++)
 			record[i][j] = 0;
+
 	n = atoi(argv[1]);
   2f:	83 ec 0c             	sub    $0xc,%esp
   32:	ff 70 04             	pushl  0x4(%eax)
-	int rutime;
 	int stime;
 	int record[3][3];
+
 	for (i = 0; i < 3; i++)
 		for (j = 0; j < 3; j++)
 			record[i][j] = 0;
@@ -63,213 +63,208 @@ main(int argc, char *argv[])
   5f:	c7 45 dc 00 00 00 00 	movl   $0x0,-0x24(%ebp)
   66:	c7 45 e0 00 00 00 00 	movl   $0x0,-0x20(%ebp)
   6d:	c7 45 e4 00 00 00 00 	movl   $0x0,-0x1c(%ebp)
+
 	n = atoi(argv[1]);
   74:	e8 07 04 00 00       	call   480 <atoi>
+	n = n*3;
+  79:	8d 1c 40             	lea    (%eax,%eax,2),%ebx
 	int pid;
-	for (i = 0; i < n; i++) {
-  79:	83 c4 10             	add    $0x10,%esp
-  7c:	85 c0                	test   %eax,%eax
-	int stime;
-	int record[3][3];
-	for (i = 0; i < 3; i++)
-		for (j = 0; j < 3; j++)
-			record[i][j] = 0;
-	n = atoi(argv[1]);
-  7e:	89 c3                	mov    %eax,%ebx
-	int pid;
-	for (i = 0; i < n; i++) {
-  80:	0f 8e 58 01 00 00    	jle    1de <main+0x1de>
-  86:	31 f6                	xor    %esi,%esi
+
+	for (i = 0; i < n; i++){
+  7c:	83 c4 10             	add    $0x10,%esp
+  7f:	85 db                	test   %ebx,%ebx
+  81:	0f 8e 57 01 00 00    	jle    1de <main+0x1de>
+  87:	31 f6                	xor    %esi,%esi
 		j = i % 3;
 		pid = fork();
-  88:	e8 5d 04 00 00       	call   4ea <fork>
+  89:	e8 5c 04 00 00       	call   4ea <fork>
 		if (pid == 0) {//child
-  8d:	85 c0                	test   %eax,%eax
-  8f:	0f 84 c9 00 00 00    	je     15e <main+0x15e>
-	for (i = 0; i < 3; i++)
-		for (j = 0; j < 3; j++)
-			record[i][j] = 0;
+  8e:	85 c0                	test   %eax,%eax
+  90:	0f 84 c9 00 00 00    	je     15f <main+0x15f>
+
 	n = atoi(argv[1]);
+	n = n*3;
 	int pid;
-	for (i = 0; i < n; i++) {
-  95:	83 c6 01             	add    $0x1,%esi
-  98:	39 f3                	cmp    %esi,%ebx
-  9a:	75 ec                	jne    88 <main+0x88>
-  9c:	31 ff                	xor    %edi,%edi
-		continue; // father continues to spawn the next child
+
+	for (i = 0; i < n; i++){
+  96:	83 c6 01             	add    $0x1,%esi
+  99:	39 f3                	cmp    %esi,%ebx
+  9b:	75 ec                	jne    89 <main+0x89>
+  9d:	31 ff                	xor    %edi,%edi
 	}
-	for (i = 0; i < n; i++) {
+
+	for (i = 0; i < n; i++){
 		pid = wait2(&retime, &rutime, &stime);
 		int res = (pid - 4) % 3; // correlates to j in the dispatching loop
 		switch(res) {
-  9e:	89 de                	mov    %ebx,%esi
-  a0:	eb 4d                	jmp    ef <main+0xef>
-  a2:	83 fb 02             	cmp    $0x2,%ebx
-  a5:	0f 84 bf 01 00 00    	je     26a <main+0x26a>
-  ab:	85 db                	test   %ebx,%ebx
-  ad:	75 35                	jne    e4 <main+0xe4>
+  9f:	89 de                	mov    %ebx,%esi
+  a1:	eb 4d                	jmp    f0 <main+0xf0>
+  a3:	83 fb 02             	cmp    $0x2,%ebx
+  a6:	0f 84 be 01 00 00    	je     26a <main+0x26a>
+  ac:	85 db                	test   %ebx,%ebx
+  ae:	75 35                	jne    e5 <main+0xe5>
 			case 0: // CPU bound processes
 				printf(1, "CPU-bound, pid: %d, ready: %d, running: %d, sleeping: %d, turnaround: %d\n", pid, retime, rutime, stime, retime + rutime + stime);
-  af:	8b 55 b8             	mov    -0x48(%ebp),%edx
-  b2:	8b 5d bc             	mov    -0x44(%ebp),%ebx
-  b5:	50                   	push   %eax
-  b6:	8d 04 1a             	lea    (%edx,%ebx,1),%eax
-  b9:	03 45 c0             	add    -0x40(%ebp),%eax
-  bc:	50                   	push   %eax
-  bd:	ff 75 c0             	pushl  -0x40(%ebp)
-  c0:	53                   	push   %ebx
-  c1:	52                   	push   %edx
-  c2:	51                   	push   %ecx
-  c3:	68 a4 09 00 00       	push   $0x9a4
-  c8:	6a 01                	push   $0x1
-  ca:	e8 a1 05 00 00       	call   670 <printf>
+  b0:	8b 55 b8             	mov    -0x48(%ebp),%edx
+  b3:	8b 5d bc             	mov    -0x44(%ebp),%ebx
+  b6:	50                   	push   %eax
+  b7:	8d 04 1a             	lea    (%edx,%ebx,1),%eax
+  ba:	03 45 c0             	add    -0x40(%ebp),%eax
+  bd:	50                   	push   %eax
+  be:	ff 75 c0             	pushl  -0x40(%ebp)
+  c1:	53                   	push   %ebx
+  c2:	52                   	push   %edx
+  c3:	51                   	push   %ecx
+  c4:	68 a4 09 00 00       	push   $0x9a4
+  c9:	6a 01                	push   $0x1
+  cb:	e8 a0 05 00 00       	call   670 <printf>
 				record[0][0] += retime;
-  cf:	8b 45 b8             	mov    -0x48(%ebp),%eax
-  d2:	01 45 c4             	add    %eax,-0x3c(%ebp)
+  d0:	8b 45 b8             	mov    -0x48(%ebp),%eax
+  d3:	01 45 c4             	add    %eax,-0x3c(%ebp)
 				record[0][1] += rutime;
 				record[0][2] += stime;
 				break;
-  d5:	83 c4 20             	add    $0x20,%esp
+  d6:	83 c4 20             	add    $0x20,%esp
 		int res = (pid - 4) % 3; // correlates to j in the dispatching loop
 		switch(res) {
 			case 0: // CPU bound processes
 				printf(1, "CPU-bound, pid: %d, ready: %d, running: %d, sleeping: %d, turnaround: %d\n", pid, retime, rutime, stime, retime + rutime + stime);
 				record[0][0] += retime;
 				record[0][1] += rutime;
-  d8:	8b 45 bc             	mov    -0x44(%ebp),%eax
-  db:	01 45 c8             	add    %eax,-0x38(%ebp)
+  d9:	8b 45 bc             	mov    -0x44(%ebp),%eax
+  dc:	01 45 c8             	add    %eax,-0x38(%ebp)
 				record[0][2] += stime;
-  de:	8b 45 c0             	mov    -0x40(%ebp),%eax
-  e1:	01 45 cc             	add    %eax,-0x34(%ebp)
-			}
+  df:	8b 45 c0             	mov    -0x40(%ebp),%eax
+  e2:	01 45 cc             	add    %eax,-0x34(%ebp)
 			exit(); // children exit here
 		}
 		continue; // father continues to spawn the next child
 	}
-	for (i = 0; i < n; i++) {
-  e4:	83 c7 01             	add    $0x1,%edi
-  e7:	39 fe                	cmp    %edi,%esi
-  e9:	0f 84 ed 00 00 00    	je     1dc <main+0x1dc>
+
+	for (i = 0; i < n; i++){
+  e5:	83 c7 01             	add    $0x1,%edi
+  e8:	39 fe                	cmp    %edi,%esi
+  ea:	0f 84 ec 00 00 00    	je     1dc <main+0x1dc>
 		pid = wait2(&retime, &rutime, &stime);
-  ef:	8d 45 c0             	lea    -0x40(%ebp),%eax
-  f2:	83 ec 04             	sub    $0x4,%esp
-  f5:	50                   	push   %eax
-  f6:	8d 45 bc             	lea    -0x44(%ebp),%eax
-  f9:	50                   	push   %eax
-  fa:	8d 45 b8             	lea    -0x48(%ebp),%eax
-  fd:	50                   	push   %eax
-  fe:	e8 af 04 00 00       	call   5b2 <wait2>
+  f0:	8d 45 c0             	lea    -0x40(%ebp),%eax
+  f3:	83 ec 04             	sub    $0x4,%esp
+  f6:	50                   	push   %eax
+  f7:	8d 45 bc             	lea    -0x44(%ebp),%eax
+  fa:	50                   	push   %eax
+  fb:	8d 45 b8             	lea    -0x48(%ebp),%eax
+  fe:	50                   	push   %eax
+  ff:	e8 ae 04 00 00       	call   5b2 <wait2>
 		int res = (pid - 4) % 3; // correlates to j in the dispatching loop
 		switch(res) {
- 103:	8d 58 fc             	lea    -0x4(%eax),%ebx
-			exit(); // children exit here
+ 104:	8d 58 fc             	lea    -0x4(%eax),%ebx
 		}
 		continue; // father continues to spawn the next child
 	}
-	for (i = 0; i < n; i++) {
+
+	for (i = 0; i < n; i++){
 		pid = wait2(&retime, &rutime, &stime);
- 106:	89 c1                	mov    %eax,%ecx
+ 107:	89 c1                	mov    %eax,%ecx
 		int res = (pid - 4) % 3; // correlates to j in the dispatching loop
 		switch(res) {
- 108:	b8 56 55 55 55       	mov    $0x55555556,%eax
- 10d:	83 c4 10             	add    $0x10,%esp
- 110:	f7 eb                	imul   %ebx
- 112:	89 d8                	mov    %ebx,%eax
- 114:	c1 f8 1f             	sar    $0x1f,%eax
- 117:	29 c2                	sub    %eax,%edx
- 119:	8d 04 52             	lea    (%edx,%edx,2),%eax
- 11c:	29 c3                	sub    %eax,%ebx
- 11e:	83 fb 01             	cmp    $0x1,%ebx
- 121:	0f 85 7b ff ff ff    	jne    a2 <main+0xa2>
+ 109:	b8 56 55 55 55       	mov    $0x55555556,%eax
+ 10e:	83 c4 10             	add    $0x10,%esp
+ 111:	f7 eb                	imul   %ebx
+ 113:	89 d8                	mov    %ebx,%eax
+ 115:	c1 f8 1f             	sar    $0x1f,%eax
+ 118:	29 c2                	sub    %eax,%edx
+ 11a:	8d 04 52             	lea    (%edx,%edx,2),%eax
+ 11d:	29 c3                	sub    %eax,%ebx
+ 11f:	83 fb 01             	cmp    $0x1,%ebx
+ 122:	0f 85 7b ff ff ff    	jne    a3 <main+0xa3>
 				record[0][0] += retime;
 				record[0][1] += rutime;
 				record[0][2] += stime;
 				break;
 			case 1: // CPU bound processes, short tasks
 				printf(1, "SCPU bound, pid: %d, ready: %d, running: %d, sleeping: %d, turnaround: %d\n", pid, retime, rutime, stime, retime + rutime + stime);
- 127:	8b 55 b8             	mov    -0x48(%ebp),%edx
- 12a:	8b 5d bc             	mov    -0x44(%ebp),%ebx
- 12d:	50                   	push   %eax
- 12e:	8d 04 1a             	lea    (%edx,%ebx,1),%eax
- 131:	03 45 c0             	add    -0x40(%ebp),%eax
- 134:	50                   	push   %eax
- 135:	ff 75 c0             	pushl  -0x40(%ebp)
- 138:	53                   	push   %ebx
- 139:	52                   	push   %edx
- 13a:	51                   	push   %ecx
- 13b:	68 f0 09 00 00       	push   $0x9f0
- 140:	6a 01                	push   $0x1
- 142:	e8 29 05 00 00       	call   670 <printf>
+ 128:	8b 55 b8             	mov    -0x48(%ebp),%edx
+ 12b:	8b 5d bc             	mov    -0x44(%ebp),%ebx
+ 12e:	50                   	push   %eax
+ 12f:	8d 04 1a             	lea    (%edx,%ebx,1),%eax
+ 132:	03 45 c0             	add    -0x40(%ebp),%eax
+ 135:	50                   	push   %eax
+ 136:	ff 75 c0             	pushl  -0x40(%ebp)
+ 139:	53                   	push   %ebx
+ 13a:	52                   	push   %edx
+ 13b:	51                   	push   %ecx
+ 13c:	68 f0 09 00 00       	push   $0x9f0
+ 141:	6a 01                	push   $0x1
+ 143:	e8 28 05 00 00       	call   670 <printf>
 				record[1][0] += retime;
- 147:	8b 45 b8             	mov    -0x48(%ebp),%eax
+ 148:	8b 45 b8             	mov    -0x48(%ebp),%eax
 				record[1][1] += rutime;
 				record[1][2] += stime;
 				break;
- 14a:	83 c4 20             	add    $0x20,%esp
+ 14b:	83 c4 20             	add    $0x20,%esp
 				record[0][1] += rutime;
 				record[0][2] += stime;
 				break;
 			case 1: // CPU bound processes, short tasks
 				printf(1, "SCPU bound, pid: %d, ready: %d, running: %d, sleeping: %d, turnaround: %d\n", pid, retime, rutime, stime, retime + rutime + stime);
 				record[1][0] += retime;
- 14d:	01 45 d0             	add    %eax,-0x30(%ebp)
+ 14e:	01 45 d0             	add    %eax,-0x30(%ebp)
 				record[1][1] += rutime;
- 150:	8b 45 bc             	mov    -0x44(%ebp),%eax
- 153:	01 45 d4             	add    %eax,-0x2c(%ebp)
+ 151:	8b 45 bc             	mov    -0x44(%ebp),%eax
+ 154:	01 45 d4             	add    %eax,-0x2c(%ebp)
 				record[1][2] += stime;
- 156:	8b 45 c0             	mov    -0x40(%ebp),%eax
- 159:	01 45 d8             	add    %eax,-0x28(%ebp)
+ 157:	8b 45 c0             	mov    -0x40(%ebp),%eax
+ 15a:	01 45 d8             	add    %eax,-0x28(%ebp)
 				break;
- 15c:	eb 86                	jmp    e4 <main+0xe4>
-	int pid;
-	for (i = 0; i < n; i++) {
+ 15d:	eb 86                	jmp    e5 <main+0xe5>
+
+	for (i = 0; i < n; i++){
 		j = i % 3;
 		pid = fork();
 		if (pid == 0) {//child
 			j = (getpid() - 4) % 3; // ensures independence from the first son's pid when gathering the results in the second part of the program
- 15e:	e8 0f 04 00 00       	call   572 <getpid>
-			switch(j) {
- 163:	83 e8 04             	sub    $0x4,%eax
- 166:	b9 03 00 00 00       	mov    $0x3,%ecx
- 16b:	99                   	cltd   
- 16c:	f7 f9                	idiv   %ecx
- 16e:	83 fa 01             	cmp    $0x1,%edx
- 171:	74 51                	je     1c4 <main+0x1c4>
- 173:	83 fa 02             	cmp    $0x2,%edx
- 176:	74 2a                	je     1a2 <main+0x1a2>
- 178:	85 d2                	test   %edx,%edx
- 17a:	74 05                	je     181 <main+0x181>
-		for (j = 0; j < 3; j++)
-			record[i][j] /= n;
+ 15f:	e8 0e 04 00 00       	call   572 <getpid>
+			switch(j){
+ 164:	83 e8 04             	sub    $0x4,%eax
+ 167:	b9 03 00 00 00       	mov    $0x3,%ecx
+ 16c:	99                   	cltd   
+ 16d:	f7 f9                	idiv   %ecx
+ 16f:	83 fa 01             	cmp    $0x1,%edx
+ 172:	74 50                	je     1c4 <main+0x1c4>
+ 174:	83 fa 02             	cmp    $0x2,%edx
+ 177:	74 29                	je     1a2 <main+0x1a2>
+ 179:	85 d2                	test   %edx,%edx
+ 17b:	74 05                	je     182 <main+0x182>
+
 	printf(1, "\nCPU BOUND - Average sleeping time: %d - Average ready time: %d - Average turnaround time: %d\n\n",  record[0][2], record[0][0], record[0][0] + record[0][1] + record[0][2]);
 	printf(1, "SCPU BOUND - Average sleeping time: %d - Average ready time: %d - Average turnaround time: %d\n\n", record[1][2], record[1][0],  record[1][0] + record[1][1] + record[1][2]);
 	printf(1, "I/O BOUND - Average sleeping time: %d - Average ready time: %d - Average turnaround time: %d\n\n", record[2][2], record[2][0],  record[2][0] + record[2][1] + record[2][2]);
+
 	exit();
- 17c:	e8 71 03 00 00       	call   4f2 <exit>
-	for (i = 0; i < n; i++) {
+ 17d:	e8 70 03 00 00       	call   4f2 <exit>
+	for (i = 0; i < n; i++){
 		j = i % 3;
 		pid = fork();
 		if (pid == 0) {//child
 			j = (getpid() - 4) % 3; // ensures independence from the first son's pid when gathering the results in the second part of the program
-			switch(j) {
- 181:	d9 ee                	fldz   
+			switch(j){
+ 182:	d9 ee                	fldz   
 				case 0: //CPU‐bound process (CPU):
 						for (double z = 0; z < 10000000.0; z+= 0.1){
- 183:	dd 05 a8 0b 00 00    	fldl   0xba8
- 189:	8d b4 26 00 00 00 00 	lea    0x0(%esi,%eiz,1),%esi
+ 184:	dd 05 a8 0b 00 00    	fldl   0xba8
+ 18a:	8d b6 00 00 00 00    	lea    0x0(%esi),%esi
  190:	dc c1                	fadd   %st,%st(1)
  192:	d9 05 b0 0b 00 00    	flds   0xbb0
  198:	df ea                	fucomip %st(2),%st
  19a:	77 f4                	ja     190 <main+0x190>
  19c:	dd d8                	fstp   %st(0)
  19e:	dd d8                	fstp   %st(0)
- 1a0:	eb da                	jmp    17c <main+0x17c>
-	for (i = 0; i < n; i++) {
+ 1a0:	eb db                	jmp    17d <main+0x17d>
+	for (i = 0; i < n; i++){
 		j = i % 3;
 		pid = fork();
 		if (pid == 0) {//child
 			j = (getpid() - 4) % 3; // ensures independence from the first son's pid when gathering the results in the second part of the program
-			switch(j) {
+			switch(j){
  1a2:	bb 64 00 00 00       	mov    $0x64,%ebx
  1a7:	89 f6                	mov    %esi,%esi
  1a9:	8d bc 27 00 00 00 00 	lea    0x0(%edi,%eiz,1),%edi
@@ -291,13 +286,13 @@ main(int argc, char *argv[])
  1ba:	83 c4 10             	add    $0x10,%esp
  1bd:	83 eb 01             	sub    $0x1,%ebx
  1c0:	75 ee                	jne    1b0 <main+0x1b0>
- 1c2:	eb b8                	jmp    17c <main+0x17c>
-	for (i = 0; i < n; i++) {
+ 1c2:	eb b9                	jmp    17d <main+0x17d>
+	for (i = 0; i < n; i++){
 		j = i % 3;
 		pid = fork();
 		if (pid == 0) {//child
 			j = (getpid() - 4) % 3; // ensures independence from the first son's pid when gathering the results in the second part of the program
-			switch(j) {
+			switch(j){
  1c4:	bb 64 00 00 00       	mov    $0x64,%ebx
  1c9:	8d b4 26 00 00 00 00 	lea    0x0(%esi,%eiz,1),%esi
 					}
@@ -315,13 +310,13 @@ main(int argc, char *argv[])
 					for (k = 0; k < 100; k++){
  1d5:	83 eb 01             	sub    $0x1,%ebx
  1d8:	75 f6                	jne    1d0 <main+0x1d0>
- 1da:	eb a0                	jmp    17c <main+0x17c>
+ 1da:	eb a1                	jmp    17d <main+0x17d>
  1dc:	89 f3                	mov    %esi,%ebx
  1de:	8d 4d c4             	lea    -0x3c(%ebp),%ecx
  1e1:	8d 75 e8             	lea    -0x18(%ebp),%esi
-				break;
 		}
 	}
+
 	for (i = 0; i < 3; i++)
 		for (j = 0; j < 3; j++)
 			record[i][j] /= n;
@@ -338,16 +333,17 @@ main(int argc, char *argv[])
  1fb:	99                   	cltd   
  1fc:	f7 fb                	idiv   %ebx
  1fe:	89 41 fc             	mov    %eax,-0x4(%ecx)
-				record[2][1] += rutime;
 				record[2][2] += stime;
 				break;
 		}
 	}
+
 	for (i = 0; i < 3; i++)
  201:	39 f1                	cmp    %esi,%ecx
  203:	75 df                	jne    1e4 <main+0x1e4>
 		for (j = 0; j < 3; j++)
 			record[i][j] /= n;
+
 	printf(1, "\nCPU BOUND - Average sleeping time: %d - Average ready time: %d - Average turnaround time: %d\n\n",  record[0][2], record[0][0], record[0][0] + record[0][1] + record[0][2]);
  205:	8b 4d c4             	mov    -0x3c(%ebp),%ecx
  208:	8b 45 c8             	mov    -0x38(%ebp),%eax
@@ -387,9 +383,10 @@ main(int argc, char *argv[])
  256:	68 48 0b 00 00       	push   $0xb48
  25b:	6a 01                	push   $0x1
  25d:	e8 0e 04 00 00       	call   670 <printf>
+
 	exit();
  262:	83 c4 20             	add    $0x20,%esp
- 265:	e9 12 ff ff ff       	jmp    17c <main+0x17c>
+ 265:	e9 13 ff ff ff       	jmp    17d <main+0x17d>
 				record[1][0] += retime;
 				record[1][1] += rutime;
 				record[1][2] += stime;
@@ -429,7 +426,7 @@ main(int argc, char *argv[])
  299:	8b 45 c0             	mov    -0x40(%ebp),%eax
  29c:	01 45 e4             	add    %eax,-0x1c(%ebp)
 				break;
- 29f:	e9 40 fe ff ff       	jmp    e4 <main+0xe4>
+ 29f:	e9 41 fe ff ff       	jmp    e5 <main+0xe5>
  2a4:	66 90                	xchg   %ax,%ax
  2a6:	66 90                	xchg   %ax,%ax
  2a8:	66 90                	xchg   %ax,%ax
